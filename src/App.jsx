@@ -6,6 +6,8 @@ import List from "./components/List";
 import Exam from "./components/Exam";
 import { useReducer } from "react";
 import { useCallback } from "react";
+import { createContext } from "react";
+import { useMemo } from "react";
 const mockData = [
   {
     id: 0,
@@ -26,6 +28,7 @@ const mockData = [
     date: new Date().getTime(),
   },
 ];
+
 function reducer(state, action) {
   switch (action.type) {
     case "CREATE":
@@ -38,7 +41,10 @@ function reducer(state, action) {
       return state.filter((item) => item.id !== action.targetId);
   }
 }
+// export const TodoContext = createContext();
 
+export const TodoStateContext = createContext();
+export const TodoDispatchContext = createContext();
 function App() {
   const [todos, dispatch] = useReducer(reducer, mockData);
   // const [todos, setTodos] = useState(mockData);
@@ -80,12 +86,20 @@ function App() {
       targetId: targetId,
     });
   }, []);
-
+  const memoizedDispatch = useMemo(() => {
+    return { onCreate, onUpdate, onDelete };
+  }, []);
   return (
     <div className="App">
       <Header />
-      <Editor onCreate={onCreate} />
-      <List todos={todos} onUpdate={onUpdate} onDelete={onDelete} />
+      {/* <TodoContext.Provider value={{ todos, onCreate, onUpdate, onDelete }}> */}
+      <TodoStateContext.Provider value={todos}>
+        <TodoDispatchContext.Provider value={memoizedDispatch}>
+          <Editor />
+          <List />
+        </TodoDispatchContext.Provider>
+      </TodoStateContext.Provider>
+      {/* </TodoContext.Provider> */}
       {/* <Exam /> */}
     </div>
   );
