@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import List from "./components/List";
 import Exam from "./components/Exam";
 import { useReducer } from "react";
+import { useCallback } from "react";
 const mockData = [
   {
     id: 0,
@@ -42,7 +43,7 @@ function App() {
   const [todos, dispatch] = useReducer(reducer, mockData);
   // const [todos, setTodos] = useState(mockData);
   const idRef = useRef(3);
-  const onCreate = (content) => {
+  const onCreate = useCallback((content) => {
     // const newTodo = {
     // id: idRef.current++,
     // isDone: false,
@@ -59,9 +60,9 @@ function App() {
         date: new Date().getTime(),
       },
     });
-  };
+  }, []);
 
-  const onUpdate = (targetId) => {
+  const onUpdate = useCallback((targetId) => {
     // setTodos(
     //   todos.map((todo) =>
     //     todo.id === targetId ? { ...todo, isDone: !todo.isDone } : todo
@@ -71,14 +72,15 @@ function App() {
       type: "UPDATE",
       targetId: targetId,
     });
-  };
-  const onDelete = (targetId) => {
+  }, []);
+  const onDelete = useCallback((targetId) => {
     // setTodos(todos.filter((todo) => todo.id !== targetId));
     dispatch({
       type: "DELETE",
       targetId: targetId,
     });
-  };
+  }, []);
+
   return (
     <div className="App">
       <Header />
